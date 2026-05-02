@@ -2,6 +2,7 @@
 
 S3method(print,tee_decomp)
 S3method(print,tee_design)
+S3method(print,tee_dstudy)
 export(augment.tee_decomp)
 export(glance.tee_decomp)
 export(tee_budget_allocate)

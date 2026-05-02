@@ -11,23 +11,33 @@ tee_se(
   M = NULL,
   H = NULL,
   R = NULL,
-  fix_temperature = NULL,
-  fix_judge = NULL,
+  fix_temperature = TRUE,
+  fix_judge = TRUE,
   design_grid = NULL
 )
 }
 \arguments{
 \item{fit}{A \code{tee_decomp} object.}
 
-\item{N, V, M, H, R}{Optional design overrides; default to the fit's own design.}
+\item{N, V, M, H, R}{Optional design overrides; default to the fit's own.}
 
-\item{fix_temperature, fix_judge}{Logical or \code{NULL} (auto-detect from fit).}
+\item{fix_temperature, fix_judge}{\code{TRUE} (operational, default), \code{FALSE}
+(averaged), or \code{NULL} (auto-detect from fit).}
 
-\item{design_grid}{Optional tibble for vectorised SE computation.}
+\item{design_grid}{Optional tibble for vectorised SE computation. Each
+row should contain columns named like the scalar arguments.}
 }
 \value{
-Numeric scalar or tibble.
+Numeric scalar (or tibble if \code{design_grid} is supplied).
 }
 \description{
-Corrected SE on theta-hat under a specific operational design
+Wraps the closed-form D-study formulas to compute the SE on \code{theta-hat}
+under any combination of (\code{N}, \code{V}, \code{M}, \code{H}, \code{R}, \code{fix_judge},
+\code{fix_temperature}). Defaults to the fit's own pilot design.
+}
+\examples{
+\dontrun{
+tee_se(fit, N = 100, V = 5, M = 3, R = 8, fix_judge = FALSE)
+tee_se(fit, design_grid = tibble::tibble(N = c(100, 200), V = 5, R = 3))
+}
 }

@@ -4,17 +4,23 @@
 \alias{tee_naive_se}
 \title{Naive standard error from a pilot}
 \usage{
-tee_naive_se(design, by = c("variant_id", "judge_model"))
+tee_naive_se(design, by = NULL)
 }
 \arguments{
 \item{design}{A \code{tee_design} object.}
 
-\item{by}{Columns to compute per-config SEs over.}
+\item{by}{Columns that index a configuration. Defaults to all faceting
+columns present in the design.}
 }
 \value{
-A tibble with one row per configuration.
+A list with \code{median_se}, \code{per_config}, and \code{n_configs}.
 }
 \description{
-Computes the naive SE per configuration (variant x judge), the standard
-approach when the pipeline factors are ignored.
+Computes the SE that a researcher would report if they ignored the pipeline
+factors entirely — collapse to a single configuration (one variant, one
+judge, one temperature) and treat replicate-averaged item means as i.i.d.
+}
+\details{
+Returns the median naive SE across all observed configurations, and the
+per-configuration values for inspection.
 }

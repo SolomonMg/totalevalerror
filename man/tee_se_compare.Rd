@@ -4,17 +4,20 @@
 \alias{tee_se_compare}
 \title{Compare naive SE to the TEE-corrected SE}
 \usage{
-tee_se_compare(fit, naive_se, theta_target = NULL)
+tee_se_compare(fit, naive_se, theta_target = NULL, level = 0.95)
 }
 \arguments{
 \item{fit}{A \code{tee_decomp} object.}
 
-\item{naive_se}{Output of \code{\link[=tee_naive_se]{tee_naive_se()}}.}
+\item{naive_se}{Output of \code{\link[=tee_naive_se]{tee_naive_se()}} or a numeric scalar.}
 
 \item{theta_target}{Optional target mean for coverage assessment.}
+
+\item{level}{Coverage level for the assessment, default 0.95.}
 }
 \value{
-A list with ratio, width-ratio, and (optionally) coverage.
+A list with \code{se_naive}, \code{se_tee}, \code{ratio}, \code{width_ratio},
+\code{underestimate_pct}, and (optionally) \code{naive_covers}, \code{tee_covers}.
 }
 \description{
 Compare naive SE to the TEE-corrected SE

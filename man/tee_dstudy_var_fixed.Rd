@@ -7,10 +7,7 @@
 tee_dstudy_var_fixed(vc, N, V, R, M = 1L, H = 1L)
 }
 \arguments{
-\item{vc}{Named list of variance components keyed by TEE label
-(\code{item}, \code{prompt}, \verb{item x prompt}, \verb{item x judge}, \verb{prompt x judge},
-\verb{item x temperature}, \verb{prompt x temperature}, \code{cell-level},
-\verb{replicate noise}, \code{between-category}).}
+\item{vc}{Named list of variance components keyed by TEE label.}
 
 \item{N}{Items.}
 

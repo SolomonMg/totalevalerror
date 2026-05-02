@@ -9,8 +9,7 @@ tee_dstudy(fit, scenarios = NULL, by = NULL)
 \arguments{
 \item{fit}{A \code{tee_decomp} object.}
 
-\item{scenarios}{Optional tibble of scenarios; defaults to a 10-row grid
-derived from \code{fit}'s baseline design.}
+\item{scenarios}{Optional tibble of scenarios.}
 
 \item{by}{Optional grouping column for per-category projections.}
 }
@@ -19,6 +18,21 @@ An object of class \code{tee_dstudy}.
 }
 \description{
 Sweeps a grid of operational designs and reports the projected
-\code{Var(theta-hat)} under each, using the closed-form formulas from the
-paper. (Phase 4 — scenario grid + per-category — to be implemented.)
+\code{Var(theta-hat)} and \code{SE(theta-hat)} under each, using the closed-form
+formulas from the paper.
+}
+\details{
+The default scenario grid covers:
+\itemize{
+\item Two baselines (averaged-over-design and operational/fixed-design).
+\item Single-lever changes: +5 reps, +2 prompts, fix temp, fix judge,
+double items.
+\item Compound: fix temp & judge; +5 reps & fix; maximal mix.
+}
+
+Pass a tibble to \code{scenarios} to override; required columns are
+\verb{scenario, N_d, V_d, M_d, H_d, R_d, fix_temp, fix_judge}.
+
+Pass a column name to \code{by} for per-category projections — fits the model
+separately on each category subset and stacks the results.
 }
