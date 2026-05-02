@@ -1,0 +1,18 @@
+Package: totalevalerror
+Title: Total Eval Error: Variance Decomposition and D-Study for LLM
+    Evaluation
+Version: 0.0.0.9000
+Authors@R: 
+    person("Solomon", "Messing", , "solomon.messing@gmail.com", role = c("aut", "cre"))
+Description: Decomposes uncertainty in LLM-based evaluation into a crossed
+    random-effects mixed model, projects standard errors under
+    hypothetical evaluation designs (D-study), and recommends pilot sizes
+    and budget allocations. Implements the methods from Messing (2026),
+    Total Eval Error.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
