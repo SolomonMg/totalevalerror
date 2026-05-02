@@ -1,0 +1,13 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Total Eval Error: Decomposing and Reducing Uncertainty in LLM Evaluation Pipelines",
+  author   = person("Solomon", "Messing"),
+  journal  = "Proceedings of the National Academy of Sciences (working paper)",
+  year     = 2026,
+  note     = "Working paper. Replace with final citation upon publication.",
+  textVersion = paste(
+    "Messing, S. (2026).",
+    "Total Eval Error: Decomposing and Reducing Uncertainty in LLM Evaluation Pipelines.",
+    "Working paper."
+  )
+)
