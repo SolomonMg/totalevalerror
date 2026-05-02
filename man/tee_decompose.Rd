@@ -22,20 +22,15 @@ tee_decompose(
 \item{formula}{Optional override; defaults to \code{\link[=tee_formula]{tee_formula()}} applied to
 \code{design}.}
 
-\item{link}{"identity" (default, linear-probability model) or "logit"
-(GLMM). The LPM is the default because the D-study projection formulas
-require linear variance components; the GLMM is provided as a robustness
-check.}
+\item{link}{"identity" (default) or "logit".}
 
-\item{heteroscedastic}{"none" (default) or "stratified". When "stratified",
-fits a separate \code{lmer} per temperature stratum and reports per-stratum
-residual variances.}
+\item{heteroscedastic}{"none" (default) or "stratified".}
 
 \item{include_cell_level}{Include the 3-way+ cell-level epsilon term.}
 
-\item{ci}{"none", "profile", or "bootstrap" — variance-component CIs.}
+\item{ci}{"none", "profile", or "bootstrap".}
 
-\item{ci_nsim}{Bootstrap replications.}
+\item{ci_nsim}{Bootstrap replications when \code{ci = "bootstrap"}.}
 
 \item{parallel}{Parallel backend for the bootstrap.}
 
@@ -47,4 +42,39 @@ An object of class \code{tee_decomp}.
 \description{
 Fits a crossed random-effects mixed model to a pilot dataset and extracts
 the TEE variance components plus fixed-effect design-sensitivity indices.
+}
+\details{
+Random components: \code{category}, \code{item_id}, \code{variant_id}, two-way interactions
+between item / prompt and each fixed factor, and (when present) a 3-way+
+cell-level term that captures any residual non-additivity. Fixed
+components: \code{judge_model}, \code{temperature}, \code{sut_model} — each summarised by
+a population variance over factor levels (1 / L, not 1 / (L - 1); using the
+sample variance for L = 3 inflates by 50\%).
+
+Three modelling modes:
+\describe{
+\item{\code{link = "identity"}}{Linear-probability model via \code{\link[lme4:lmer]{lme4::lmer()}}.
+The default; required for D-study formulas because the projection
+formulas are linear in variance components.}
+\item{\code{link = "logit"}}{GLMM via \code{\link[lme4:glmer]{lme4::glmer()}} with \code{family = binomial}.
+Robustness check on binary outcomes; D-study projections do not apply
+directly because variance components on the logit scale are not
+additive on the probability scale.}
+\item{\code{heteroscedastic = "stratified"}}{Fits a separate \code{lmer} per
+temperature stratum and reports per-stratum residual variances. Use
+when the residual scales differ across temperature levels.}
+}
+}
+\examples{
+\dontrun{
+set.seed(1)
+sim <- tee_simulate(N = 30, V = 3, M = 2, R = 3,
+                    variances = list(item = 0.2, prompt = 0.05,
+                                     replicate = 0.1))
+des <- tee_design(sim, outcome = y, item = item_id, prompt = variant_id,
+                  judge = judge_model, replicate = replication,
+                  scoring = "likert")
+fit <- tee_decompose(des)
+fit
+}
 }

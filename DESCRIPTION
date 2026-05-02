@@ -19,10 +19,12 @@ Imports:
     broom.mixed,
     cli,
     dplyr,
+    generics,
     lme4,
     MASS,
     purrr,
     rlang,
+    stats,
     tibble,
     tidyr,
     vctrs

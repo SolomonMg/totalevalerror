@@ -8,7 +8,8 @@ tee_theta_ci(
   fit,
   level = 0.95,
   method = c("normal", "bootstrap"),
-  design = NULL
+  design = NULL,
+  nsim = 200
 )
 }
 \arguments{
@@ -16,13 +17,20 @@ tee_theta_ci(
 
 \item{level}{Coverage level (default 0.95).}
 
-\item{method}{"normal" or "bootstrap".}
+\item{method}{"normal" (default) or "bootstrap".}
 
-\item{design}{Optional operational design override; defaults to \code{fit}'s own.}
+\item{design}{Optional named list overriding the operational design facets
+(\code{N}, \code{V}, \code{M}, \code{H}, \code{R}, \code{fix_judge}, \code{fix_temperature}).}
+
+\item{nsim}{Bootstrap replications when \code{method = "bootstrap"}.}
 }
 \value{
 A 1-row tibble with \code{estimate}, \code{ci_lo}, \code{ci_hi}, \code{se}, \code{method}.
 }
 \description{
-Confidence interval on theta-hat
+Returns a CI on the headline metric — the mean outcome — under either the
+fit's own operational design (default) or a user-supplied override. The
+"normal" method uses \verb{theta-hat ± qnorm * SE(theta-hat)} where SE comes
+from the closed-form D-study formula; "bootstrap" parametric-bootstraps
+theta-hat by resampling at the operational design level.
 }

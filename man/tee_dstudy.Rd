@@ -18,5 +18,7 @@ derived from \code{fit}'s baseline design.}
 An object of class \code{tee_dstudy}.
 }
 \description{
-Project Var(theta-hat) under hypothetical designs (D-study)
+Sweeps a grid of operational designs and reports the projected
+\code{Var(theta-hat)} under each, using the closed-form formulas from the
+paper. (Phase 4 — scenario grid + per-category — to be implemented.)
 }

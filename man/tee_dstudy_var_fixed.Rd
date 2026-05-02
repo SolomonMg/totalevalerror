@@ -4,24 +4,30 @@
 \alias{tee_dstudy_var_fixed}
 \title{Closed-form D-study variance: fixed temperature & fixed judge}
 \usage{
-tee_dstudy_var_fixed(vc, N, V, R, M = 1, H = 1)
+tee_dstudy_var_fixed(vc, N, V, R, M = 1L, H = 1L)
 }
 \arguments{
-\item{vc}{Named list of variance components.}
+\item{vc}{Named list of variance components keyed by TEE label
+(\code{item}, \code{prompt}, \verb{item x prompt}, \verb{item x judge}, \verb{prompt x judge},
+\verb{item x temperature}, \verb{prompt x temperature}, \code{cell-level},
+\verb{replicate noise}, \code{between-category}).}
 
-\item{N}{Number of items.}
+\item{N}{Items.}
 
-\item{V}{Number of prompt variants.}
+\item{V}{Prompt variants.}
 
-\item{R}{Number of replications per cell.}
+\item{R}{Replications.}
 
-\item{M}{Number of judges (default 1, treated as fixed).}
+\item{M}{Judges (default 1, treated as fixed).}
 
-\item{H}{Number of temperatures (default 1, treated as fixed).}
+\item{H}{Temperatures (default 1, treated as fixed).}
 }
 \value{
 Numeric scalar — projected \code{Var(theta-hat)}.
 }
 \description{
-Closed-form D-study variance: fixed temperature & fixed judge
+Case 1 of the paper's D-study: when both temperature and judge are
+treated as fixed (operational case for a single deployed configuration),
+the interaction terms \code{s2_ij} and \code{s2_pj} average over items / prompts
+but not over the fixed facet, so they remain in the projection.
 }

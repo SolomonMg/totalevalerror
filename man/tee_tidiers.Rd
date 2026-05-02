@@ -4,8 +4,7 @@
 \alias{tee_tidiers}
 \title{Tidy / glance / augment methods for TEE objects}
 \description{
-Implemented as S3 methods on the package's S3 classes. The \code{tidy}, \code{glance},
-and \code{augment} generics come from \code{broom}/\code{broom.mixed}; we conditionally
-register methods at load time via \code{\link[vctrs:s3_register]{vctrs::s3_register()}} so that \code{broom}
-itself is only a soft dependency.
+Implemented as S3 methods on the package's S3 classes. The \code{tidy},
+\code{glance}, and \code{augment} generics come from \code{broom} / \code{broom.mixed}; we
+conditionally register methods on package load via \code{\link[vctrs:s3_register]{vctrs::s3_register()}}.
 }

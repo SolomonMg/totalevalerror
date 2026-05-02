@@ -12,10 +12,12 @@ tee_decompose_diagnose(design, ...)
 \item{...}{Passed to \code{\link[=tee_decompose]{tee_decompose()}}.}
 }
 \value{
-A tibble with per-component variance estimates from each fit.
+A tibble with columns \code{model}, \code{cell_level_var}, \code{replicate_var},
+\code{total_residual}.
 }
 \description{
 Fits the model with and without the 3-way+ cell-level term and reports how
-much variance migrates between the two residuals. Useful for confirming
-that the Tier-1 reducible bucket is well-identified.
+much variance migrates between the two residual components. When the
+cell-level term is omitted, its variance collapses into the replicate
+residual, biasing the Tier-1 reducible bucket upward.
 }

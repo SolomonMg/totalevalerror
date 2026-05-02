@@ -11,11 +11,19 @@ tee_ci(fit, type = c("profile", "bootstrap"), nsim = 200)
 
 \item{type}{"profile" or "bootstrap".}
 
-\item{nsim}{Bootstrap replications when \code{type = "bootstrap"}.}
+\item{nsim}{Bootstrap replications.}
 }
 \value{
 A tibble with \code{component}, \code{ci_lo_var}, \code{ci_hi_var}.
 }
 \description{
-Confidence intervals on individual variance components
+Computes profile-likelihood or parametric-bootstrap CIs on each random-
+effect variance component of a fitted \code{tee_decomp}. The profile method is
+faster and preferred; bootstrap is the fallback when profiling fails to
+converge.
+}
+\details{
+Three environment variables tune the bootstrap:
+\code{TEE_BOOT_NSIM} (default 200), \code{TEE_BOOT_PARALLEL} (default "snow"),
+\code{TEE_BOOT_SKIP} (set to "1" to skip).
 }
