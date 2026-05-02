@@ -10,12 +10,32 @@ tee_formula(design, include_cell_level = TRUE)
 \item{design}{A \code{tee_design} object.}
 
 \item{include_cell_level}{Whether to include the 3-way+ cell-level epsilon
-term. Defaults to \code{TRUE}.}
+term.}
 }
 \value{
 A \code{formula} suitable for \code{\link[lme4:lmer]{lme4::lmer()}}.
 }
 \description{
-Generates the crossed random-effects formula that matches the paper's DGP,
-including the optional 3-way+ cell-level epsilon term.
+Generates the crossed random-effects formula that matches the paper's DGP.
+Fixed effects: \code{judge_model}, \code{temperature}, \code{sut_model} when present.
+Random effects: \code{category}, \code{item_id}, \code{variant_id}, two-way item / prompt
+interactions with each fixed factor, and (when \code{include_cell_level = TRUE})
+a maximal-interaction cell-level term that captures any 3-way+ residual.
+}
+\details{
+Drops the cell-level term automatically when no fixed factors are present
+(the maximal interaction would collapse to \code{item:variant}, which is already
+a separate random effect).
+}
+\examples{
+df <- data.frame(
+  y = rnorm(60),
+  item = rep(1:5, each = 12),
+  variant = rep(rep(1:3, each = 4), 5),
+  judge = rep(rep(1:2, each = 2), 15),
+  rep = rep(1:2, 30)
+)
+des <- tee_design(df, outcome = y, item = item, prompt = variant,
+                  judge = judge, replicate = rep, scoring = "likert")
+tee_formula(des)
 }

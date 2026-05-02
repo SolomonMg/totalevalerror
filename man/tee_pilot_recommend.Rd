@@ -2,7 +2,7 @@
 % Please edit documentation in R/pilot.R
 \name{tee_pilot_recommend}
 \alias{tee_pilot_recommend}
-\title{Recommend pilot sizes}
+\title{Recommend pilot sizes for a target variance-component precision}
 \usage{
 tee_pilot_recommend(
   target_se_pct = 20,
@@ -11,18 +11,35 @@ tee_pilot_recommend(
 )
 }
 \arguments{
-\item{target_se_pct}{Target precision on Var-component estimates.}
+\item{target_se_pct}{Target relative SE on variance components, expressed
+as a percentage. Default 20 (i.e., 20\%).}
 
-\item{prior_vc}{Optional named list of prior variance guesses; if \code{NULL},
-uses a built-in conservative prior calibrated from the paper's pilots.}
+\item{prior_vc}{Reserved; currently unused. The chi-squared bound is
+distribution-only and does not depend on prior values.}
 
-\item{facets}{Which facets to size; defaults to all four.}
+\item{facets}{Which facets to size. Defaults to the four most common.}
 }
 \value{
-A tibble with recommended sizes and the resulting precision.
+A tibble with columns \code{facet}, \code{df_min}, \code{recommendation}.
 }
 \description{
-Inverts the D-study formula to recommend the minimum
-\verb{(N, V, M, R)} such that variance-component estimates achieve a target
-precision.
+Given a target relative precision on variance-component estimates, returns
+the minimum facet sizes that achieve it. Uses the chi-squared
+approximation for REML-estimated variance components: a one-way component
+estimated from \code{df} independent units has approximate relative SE
+\code{sqrt(2 / df)}.
+}
+\details{
+Inverting that bound, achieving relative SE at most \code{p} requires
+\code{df >= 2 / p^2}. For example, 20\% relative precision needs df >= 50;
+10\% needs df >= 200.
+
+For two-way interactions, the bound applies to the product of the two
+facet counts (e.g., \verb{item x judge} requires \code{N * M >= df_min}). For
+replicate noise, the bound applies to the total cell count
+\code{N * V * M * H * R}.
+}
+\examples{
+tee_pilot_recommend(target_se_pct = 20)
+tee_pilot_recommend(target_se_pct = 10)
 }

@@ -18,22 +18,20 @@ tee_design(
 )
 }
 \arguments{
-\item{data}{A data frame with one row per LLM call.}
+\item{data}{A data frame.}
 
 \item{outcome}{Numeric column with the score (Likert 1 - 5 or binary 0 / 1).}
 
 \item{item}{Item / prompt-content identifier.}
 
-\item{category}{Optional topic group; if \code{NULL} the DGP collapses to a single
-category.}
+\item{category}{Optional topic group; if \code{NULL}, the DGP collapses to a
+single category.}
 
 \item{prompt}{Prompt-paraphrase (variant) identifier.}
 
-\item{judge}{Optional LLM-judge model. \code{NULL} for benchmarks with no judge,
-such as MMLU answer-key evaluation.}
+\item{judge}{Optional LLM-judge model.}
 
-\item{sut}{Optional system-under-test model. \code{NULL} for fixed-SUT setups,
-such as AILuminate where the SUT is the evaluation target.}
+\item{sut}{Optional system-under-test model.}
 
 \item{temperature}{Optional temperature factor.}
 
@@ -42,10 +40,39 @@ such as AILuminate where the SUT is the evaluation target.}
 \item{scoring}{"likert" or "binary".}
 }
 \value{
-An object of class \code{tee_design}.
+An object of class \code{tee_design}, which is a list with:
+\itemize{
+\item \code{data}: the cleaned data frame (factors coerced, NAs dropped).
+\item \code{cols}: a named list of column names used for each facet (\code{NA} when
+absent).
+\item \code{meta}: a list of facet counts and the balance flag.
+\item \code{scoring}: the scoring method.
+\item \code{call}: the matched call.
+}
 }
 \description{
-Wraps a long-format pilot data frame with extracted design facets — items,
-prompts, judges, SUTs, temperatures, replications. The returned object is the
-input to every other verb in the package.
+Wraps a long-format pilot data frame with extracted design facets: items,
+prompt variants, judges, systems-under-test, temperatures, and
+replications. The returned object is the input to every other verb in the
+package.
+}
+\details{
+Pass column names with bare symbols (tidy evaluation), the same convention
+used by \code{dplyr}. Optional facets default to \code{NULL}. Rows where \code{outcome}
+is \code{NA} are dropped with a message.
+
+Counts of distinct levels are exposed in the returned object as
+\code{meta$N} (items), \code{meta$V} (prompts), \code{meta$M} (judges), \code{meta$S} (SUTs),
+\code{meta$H} (temperatures), and \code{meta$R} (max replicate index + 1).
+}
+\examples{
+df <- data.frame(
+  y = rnorm(60),
+  item = rep(1:5, each = 12),
+  variant = rep(rep(1:3, each = 4), 5),
+  judge = rep(rep(1:2, each = 2), 15),
+  rep = rep(1:2, 30)
+)
+tee_design(df, outcome = y, item = item, prompt = variant,
+           judge = judge, replicate = rep, scoring = "likert")
 }
