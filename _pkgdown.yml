@@ -1,4 +1,78 @@
-url: ~
+url: https://solomonmg.github.io/totalevalerror/
 template:
   bootstrap: 5
 
+reference:
+  - title: "Design wrapping"
+    desc: "Wrap pilot data with extracted design facets."
+    contents:
+      - tee_design
+      - tee_formula
+      - tee_pilot_recommend
+  - title: "Variance decomposition"
+    desc: "Fit the crossed random-effects model and inspect components."
+    contents:
+      - tee_decompose
+      - tee_decompose_diagnose
+      - tee_ci
+  - title: "Standard errors and confidence intervals"
+    desc: "Closed-form SEs and CIs on theta-hat."
+    contents:
+      - tee_se
+      - tee_theta_ci
+      - tee_naive_se
+      - tee_se_compare
+  - title: "D-study"
+    desc: "Project Var(theta-hat) under hypothetical designs."
+    contents:
+      - tee_dstudy
+      - tee_dstudy_var_fixed
+      - tee_dstudy_var_avg
+      - tee_dstudy_var_mixed
+  - title: "Budget allocation"
+    desc: "Optimal allocation under a fixed budget, with heterogeneous costs."
+    contents:
+      - tee_budget_allocate
+      - tee_budget_compare
+  - title: "Simulation"
+    desc: "Generate synthetic data from the TEE DGP and run coverage studies."
+    contents:
+      - tee_simulate
+      - tee_sim_coverage
+  - title: "External validity"
+    contents:
+      - tee_external_corr
+  - title: "Plotting"
+    contents:
+      - tee_plots
+  - title: "Tidiers"
+    contents:
+      - tee_tidiers
+      - tidy.tee_decomp
+      - glance.tee_decomp
+      - augment.tee_decomp
+  - title: "Writeup helper"
+    contents:
+      - tee_writeup
+  - title: "Bundled data"
+    contents:
+      - mmlu_pilot
+      - safety_pilot
+      - arena_pilot
+  - title: "Reserved (v0.2)"
+    contents:
+      - tee_decompose_multiturn
+
+articles:
+  - title: "Get started"
+    contents:
+      - totalevalerror
+  - title: "Empirical replications"
+    contents:
+      - mmlu
+      - safety
+      - arena-likert
+  - title: "Advanced"
+    contents:
+      - heteroscedastic
+      - simulation-validation
