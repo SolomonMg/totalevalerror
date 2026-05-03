@@ -2,8 +2,29 @@
 % Please edit documentation in R/plots.R
 \name{tee_plots}
 \alias{tee_plots}
+\alias{autoplot.tee_decomp}
+\alias{autoplot.tee_dstudy}
+\alias{autoplot.tee_budget}
 \title{Plotting methods for TEE objects}
+\usage{
+autoplot.tee_decomp(object, type = c("forest", "theta_ci"), ...)
+
+autoplot.tee_dstudy(object, type = c("waterfall", "by_cat"), ...)
+
+autoplot.tee_budget(object, type = c("frontier", "heatmap"), ...)
+}
+\arguments{
+\item{object}{A TEE S3 object.}
+
+\item{type}{Plot variant. For \code{tee_decomp}: "forest" (default), or
+"theta_ci". For \code{tee_dstudy}: "waterfall" (default) or "by_cat". For
+\code{tee_budget}: "frontier" (default) or "heatmap".}
+
+\item{...}{Forwarded to layer functions.}
+}
 \description{
 \code{autoplot} methods are conditionally registered on package load when
-\code{ggplot2} is available, via \code{\link[vctrs:s3_register]{vctrs::s3_register()}}.
+\code{ggplot2} is available, via \code{\link[vctrs:s3_register]{vctrs::s3_register()}}. All plot functions
+return \code{ggplot} objects with no side effects, so users can compose
+additional layers with \code{+}.
 }

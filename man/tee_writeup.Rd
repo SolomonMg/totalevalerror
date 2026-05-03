@@ -9,11 +9,27 @@ tee_writeup(fit, style = c("paper", "blog"))
 \arguments{
 \item{fit}{A \code{tee_decomp} object.}
 
-\item{style}{"paper" (terse, numerical) or "blog" (longer, more contextual).}
+\item{style}{"paper" or "blog".}
 }
 \value{
 A character string.
 }
 \description{
-One-paragraph writeup populated from a fit
+Generates a paragraph summary of a TEE decomposition suitable for pasting
+into a paper, blog post, or report. Pulls the headline numbers (theta-hat,
+naive vs TEE SE, dominant variance components, top D-study lever) directly
+from the fitted object.
+}
+\details{
+Two styles:
+\describe{
+\item{paper}{Terse, numerical, no hedging. ~3 sentences.}
+\item{blog}{Longer, with framing and a "what to do next" sentence.
+~5 sentences.}
+}
+}
+\examples{
+\dontrun{
+tee_writeup(fit, style = "paper")
+}
 }

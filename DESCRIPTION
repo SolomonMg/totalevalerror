@@ -16,26 +16,27 @@ RoxygenNote: 7.3.3
 Depends:
     R (>= 4.2)
 Imports:
-    broom.mixed,
     cli,
     dplyr,
-    generics,
     lme4,
-    MASS,
-    purrr,
     rlang,
     stats,
     tibble,
-    tidyr,
+    utils,
     vctrs
 Suggests:
+    broom.mixed,
+    generics,
     ggplot2,
     glmmTMB,
     knitr,
+    MASS,
+    purrr,
     rmarkdown,
     SimDesign,
     simhelpers,
     testthat (>= 3.0.0),
+    tidyr,
     vdiffr,
     withr
 Config/testthat/edition: 3
