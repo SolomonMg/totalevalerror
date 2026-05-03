@@ -4,19 +4,29 @@
 \alias{tee_sim_coverage}
 \title{Monte Carlo coverage study}
 \usage{
-tee_sim_coverage(scenarios, n_sim = 1000, seed = 42)
+tee_sim_coverage(scenarios, n_sim = 200L, seed = 42, coverage_level = 0.95)
 }
 \arguments{
-\item{scenarios}{Tibble of scenarios.}
+\item{scenarios}{A tibble where each row defines a scenario. Required
+columns are facet sizes (\code{N}, \code{V}, \code{M}, \code{H}, \code{R}) and a list-column
+\code{variances} of named lists (true variance components).}
 
 \item{n_sim}{Number of simulations per scenario.}
 
-\item{seed}{Random seed.}
+\item{seed}{Base seed (per scenario seed = \code{seed + scenario_index}).}
+
+\item{coverage_level}{Coverage target (default 0.95).}
 }
 \value{
-A tibble with bias, RMSE, coverage per scenario.
+A tibble with \code{scenario_id}, \code{component}, \code{truth}, \code{mean_est},
+\code{bias}, \code{rmse}, \code{coverage} columns.
 }
 \description{
-Wraps \code{SimDesign::Generate / Analyse / Summarise} to run a coverage study
-across a grid of scenarios.
+Runs \code{n_sim} simulations under each scenario, fits the TEE decomposition,
+and reports bias / RMSE / coverage of the variance components. Returns a
+tibble with one row per (scenario, component).
+}
+\details{
+Uses the package's own \code{\link[=tee_simulate]{tee_simulate()}} under the hood; \code{SimDesign} is
+supported when installed for parallel execution.
 }

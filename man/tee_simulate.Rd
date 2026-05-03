@@ -5,31 +5,52 @@
 \title{Simulate data from the TEE DGP}
 \usage{
 tee_simulate(
-  N = 100,
-  V = 5,
-  M = 3,
-  H = 2,
-  R = 3,
+  N = 100L,
+  V = 5L,
+  M = 3L,
+  H = 1L,
+  R = 3L,
   variances = NULL,
+  judge_means = NULL,
+  temp_means = NULL,
   scoring = c("likert", "binary"),
   seed = 42
 )
 }
 \arguments{
-\item{N, V, M, H, R}{Design parameters.}
+\item{N, V, M, H, R}{Design parameters (items, prompt variants, judges,
+temperatures, replications).}
 
 \item{variances}{Named list of variance components.}
 
-\item{scoring}{"likert" (continuous) or "binary" (round + clip).}
+\item{judge_means}{Optional vector of length \code{M} for judge fixed effects.
+Defaults to a small evenly-spaced sequence.}
+
+\item{temp_means}{Optional vector of length \code{H} for temperature fixed
+effects. Defaults to a small evenly-spaced sequence.}
+
+\item{scoring}{"likert" (continuous) or "binary".}
 
 \item{seed}{Random seed.}
 }
 \value{
-A long-format tibble with one row per LLM call, suitable for
-\code{\link[=tee_design]{tee_design()}}.
+A long-format tibble with columns \code{item_id}, \code{variant_id},
+\code{judge_model}, \code{temperature}, \code{replication}, and \code{outcome}.
 }
 \description{
 Generates synthetic data matching the paper's crossed random-effects DGP.
-Useful for testing, teaching, and reproducing the Monte Carlo coverage
-simulations from Appendix D.
+Each row is one LLM call. Useful for testing, teaching, and reproducing
+the Monte Carlo coverage simulations from Appendix D.
+}
+\details{
+The default \code{variances} list draws from the AILuminate-pilot prior in the
+paper. Override any entry to run a custom DGP.
+
+Likert mode returns the linear-scale outcome directly (no rounding).
+Binary mode applies a logistic transform centered at 0 and draws from
+Bernoulli(\code{p}) where \code{p = plogis(linear_pred + replicate_noise)}.
+}
+\examples{
+sim <- tee_simulate(N = 30, V = 4, M = 2, R = 3, seed = 1)
+head(sim)
 }

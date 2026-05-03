@@ -4,22 +4,30 @@
 \alias{tee_external_corr}
 \title{External-validity correlation against ground truth}
 \usage{
-tee_external_corr(fit, ground_truth, by = "item_id")
+tee_external_corr(fit, ground_truth, by = "item_id", level = 0.95)
 }
 \arguments{
 \item{fit}{A \code{tee_decomp} object.}
 
-\item{ground_truth}{Numeric vector of gold-standard values.}
+\item{ground_truth}{A data frame with at least \code{by} and a numeric
+\code{truth} column. Or a named numeric vector keyed by item_id.}
 
-\item{by}{Item-identifier column joining \code{fit$design$data} to
-\code{ground_truth}.}
+\item{by}{Column joining \code{fit$design$data} to \code{ground_truth}.}
+
+\item{level}{CI coverage (default 0.95).}
 }
 \value{
-A tibble with \code{metric} (\code{spearman}/\code{kendall}), \code{estimate},
-\code{ci_lo}, \code{ci_hi}.
+A tibble with \code{metric} (\code{spearman} / \code{kendall}), \code{estimate},
+\code{ci_lo}, \code{ci_hi}, and \code{n} (number of items joined).
 }
 \description{
-Computes Spearman and Kendall correlations between item-level fitted values
-from a \code{tee_decomp} and a user-supplied ground-truth column. Returns CIs
-via the Fisher transform.
+Computes Spearman and Kendall rank correlations between item-level
+fitted values from a \code{tee_decomp} and a user-supplied ground-truth
+column. Returns CIs via the Fisher transform (for Spearman) and via the
+large-sample variance for Kendall's tau.
+}
+\details{
+Item-level fitted values are computed by averaging the model's fitted
+values across all rows for each \code{item_id}, and joining to \code{ground_truth}
+on \code{by}.
 }
