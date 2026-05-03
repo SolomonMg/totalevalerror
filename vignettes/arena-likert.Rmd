@@ -1,0 +1,45 @@
+---
+title: "Chatbot Arena Likert: per-category D-study"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Chatbot Arena Likert: per-category D-study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(totalevalerror)
+```
+
+The bundled `arena_pilot` is a subsample of the Chatbot Arena LLM-as-judge Likert pilot (Messing 2026, Section `sec:arena`). Categories are Arena's auto-classification of battle topics (creative_writing, persuasion, coding, factual_qa).
+
+## 1. Load and wrap
+
+```{r load}
+data(arena_pilot)
+str(arena_pilot)
+
+des <- tee_design(
+  arena_pilot,
+  outcome     = outcome,
+  item        = item_id,
+  category    = category,
+  prompt      = variant_id,
+  judge       = judge_model,
+  replicate   = replication,
+  scoring     = "likert"
+)
+```
+
+## 2. Variance decomposition
+
+```{r fit}
+fit <- suppressWarnings(suppressMessages(tee_decompose(des)))
+generics::tidy(fit)[, c("tle_label", "variance", "pct_total", "tier")]
+```
+
+In the full Arena Likert dataset, judge x item interaction dominates within most categories, but the secondary structure differs (creative_writing has more prompt sensitivity than coding, for example).

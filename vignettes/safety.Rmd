@@ -1,0 +1,76 @@
+---
+title: "AILuminate safety: variance decomposition + per-category D-study"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AILuminate safety: variance decomposition + per-category D-study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(totalevalerror)
+```
+
+This vignette replicates the AILuminate safety analysis from Messing (2026, Section `sec:safety`) on the bundled `safety_pilot` subsample. The headline is that the dominant variance source is item x judge interaction, and that swapping a single judge for three judges reduces the SE substantially.
+
+## 1. Load the pilot
+
+```{r load}
+data(safety_pilot)
+str(safety_pilot)
+
+des <- tee_design(
+  safety_pilot,
+  outcome     = outcome,
+  item        = item_id,
+  category    = category,
+  prompt      = variant_id,
+  judge       = judge_model,
+  temperature = temperature,
+  replicate   = replication,
+  scoring     = "binary"
+)
+```
+
+## 2. LPM and GLMM decompositions
+
+```{r fit}
+fit_lpm <- suppressWarnings(suppressMessages(
+  tee_decompose(des, link = "identity")
+))
+generics::tidy(fit_lpm)[, c("tle_label", "variance", "pct_total", "tier")]
+```
+
+## 3. Naive vs TEE SE
+
+```{r naive}
+naive <- tee_naive_se(des)
+tee_se_compare(fit_lpm, naive)
+```
+
+## 4. What does swapping 1 judge for 3 buy us?
+
+```{r swap_judges}
+tee_se(fit_lpm, M = 1L, fix_judge = TRUE)
+tee_se(fit_lpm, M = 3L, fix_judge = FALSE)
+```
+
+## 5. Per-category D-study
+
+```{r per_cat, eval = FALSE}
+# Per-category D-study refits the model on each category subset and stacks
+# the projections. Skipped here because the bundled subsample is small;
+# enable on the full data for category-level guidance.
+proj_cat <- tee_dstudy(fit_lpm, by = "category")
+head(proj_cat$scenarios)
+```
+
+## 6. Auto-paragraph
+
+```{r writeup, results = "asis"}
+cat(tee_writeup(fit_lpm, style = "paper"))
+```

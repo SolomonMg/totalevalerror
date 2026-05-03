@@ -33,7 +33,12 @@ tee_formula <- function(design, include_cell_level = TRUE) {
     stop("`design` must be a `tee_design` object.", call. = FALSE)
   }
 
-  has <- function(col) col %in% names(design$data)
+  has <- function(col) {
+    if (!col %in% names(design$data)) return(FALSE)
+    # Skip factors with <2 levels — they would trip lme4's contrasts handler
+    # and don't carry information anyway.
+    nlevels(design$data[[col]]) >= 2L
+  }
 
   fixed_terms <- character()
   if (has("judge_model")) fixed_terms <- c(fixed_terms, "judge_model")

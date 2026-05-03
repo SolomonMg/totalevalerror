@@ -1,0 +1,68 @@
+---
+title: "MMLU budget allocation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MMLU budget allocation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(totalevalerror)
+```
+
+This vignette replicates Section `sec:mmlu` of Messing (2026) on the bundled `mmlu_pilot` subsample. MMLU has no LLM judge (the answer key is the ground truth), so the design has SUTs but no `judge_model`.
+
+## 1. Load the pilot and wrap in a design
+
+```{r load}
+data(mmlu_pilot)
+str(mmlu_pilot)
+
+des <- tee_design(
+  mmlu_pilot,
+  outcome     = outcome,
+  item        = item_id,
+  category    = category,
+  prompt      = variant_id,
+  sut         = sut_model,
+  temperature = temperature,
+  replicate   = replication,
+  scoring     = "binary"
+)
+des
+```
+
+## 2. Fit the variance decomposition
+
+```{r fit}
+fit <- suppressWarnings(suppressMessages(tee_decompose(des)))
+generics::tidy(fit)[, c("tle_label", "variance", "pct_total", "tier")]
+```
+
+## 3. Naive vs TEE SE
+
+```{r naive_vs_tee}
+naive <- tee_naive_se(des)
+tee_se_compare(fit, naive)
+```
+
+## 4. D-study: where should the next dollar go?
+
+```{r dstudy}
+proj <- tee_dstudy(fit)
+proj$scenarios[, c("scenario", "se_total", "reduction_pct")]
+```
+
+## 5. Budget allocation: 50% error reduction headline
+
+```{r budget}
+cmp <- tee_budget_compare(fit, budget = 4000, n_pool = 500)
+cmp
+```
+
+The TEE-optimal allocation should produce a smaller SE than either the naive or standard strategy — this is the headline 50% error-reduction claim from the paper, applied here to the pilot subsample (the magnitude on the full data is in Messing 2026, Section `sec:mmlu`).

@@ -1,0 +1,47 @@
+---
+title: "Monte Carlo coverage validation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Monte Carlo coverage validation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(totalevalerror)
+```
+
+This vignette replicates the spirit of Appendix D.7 (variance underestimation simulation) from Messing (2026) at a small-N scale. The full `n_sim = 1000` study lives in `analysis/04g2_sim_underestimation_balanced.R` of the paper repo.
+
+## A small Monte Carlo
+
+```{r small_mc, eval = FALSE}
+# This block is set to eval = FALSE because n_sim = 50 is still ~30s on a
+# laptop. Remove `eval = FALSE` to run.
+scenarios <- tibble::tibble(
+  N = c(30L, 60L),
+  V = 3L, M = 2L, H = 1L, R = 2L,
+  variances = list(
+    list(item = 0.20, prompt = 0.05, item_x_prompt = 0.04,
+         item_x_judge = 0.10, cell_level = 0.02, replicate = 0.15),
+    list(item = 0.20, prompt = 0.05, item_x_prompt = 0.04,
+         item_x_judge = 0.10, cell_level = 0.02, replicate = 0.15)
+  )
+)
+out <- tee_sim_coverage(scenarios, n_sim = 50, seed = 1)
+out
+```
+
+## What to look for
+
+`tee_sim_coverage()` returns one row per (scenario, component) with:
+- `truth`: the planted variance.
+- `mean_est`: average REML estimate across simulations.
+- `bias`: `mean_est - truth`. Should be near zero at moderate `N`.
+- `rmse`: root mean squared error.
+
+Bias should approach zero as `N` grows; RMSE should shrink with `sqrt(N)`. The full Appendix D.7 study uses `n_sim = 1000` and finds bias <2% on every component at `N >= 50`.

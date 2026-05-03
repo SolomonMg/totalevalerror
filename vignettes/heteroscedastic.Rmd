@@ -1,0 +1,73 @@
+---
+title: "Heteroscedastic residuals: stratified-by-temperature fits"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Heteroscedastic residuals: stratified-by-temperature fits}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(totalevalerror)
+```
+
+When LLM call-to-call variability differs across temperatures (e.g., temperature = 0 has near-zero residual variance while temperature = 1.0 has substantial variance), the homoscedastic `lmer` fit pools residuals across strata and biases the replicate-noise component. The package's `heteroscedastic = "stratified"` mode fits a separate `lmer` per temperature stratum and reports per-stratum residual variances.
+
+## Simulate heteroscedastic data
+
+```{r simulate}
+# Three temperatures with different residual variances.
+sims <- lapply(seq_along(c(0.005, 0.04, 0.08)), function(i) {
+  s <- tee_simulate(
+    N = 25, V = 3, M = 2, R = 3,
+    variances = list(
+      item = 0.20, prompt = 0.05,
+      item_x_prompt = 0.04, item_x_judge = 0.08,
+      cell_level = 0.01,
+      replicate = c(0.005, 0.04, 0.08)[i]
+    ),
+    seed = i
+  )
+  s$temperature <- factor(c(0, 0.5, 1.0)[i])
+  s
+})
+sim <- do.call(rbind, sims)
+```
+
+## Fit homoscedastic (default) vs stratified
+
+```{r fits}
+des <- tee_design(
+  sim,
+  outcome     = outcome,
+  item        = item_id,
+  prompt      = variant_id,
+  judge       = judge_model,
+  temperature = temperature,
+  replicate   = replication,
+  scoring     = "likert"
+)
+
+fit_homo  <- suppressWarnings(suppressMessages(
+  tee_decompose(des, heteroscedastic = "none")
+))
+fit_strat <- suppressWarnings(suppressMessages(
+  tee_decompose(des, heteroscedastic = "stratified")
+))
+```
+
+The stratified fit retains per-stratum residual variances:
+
+```{r stratum}
+fit_strat$meta$residual_by_temperature
+```
+
+The homoscedastic fit reports a single pooled residual that hides the heteroscedasticity:
+
+```{r homo}
+fit_homo$variance[fit_homo$variance$tle_label == "replicate noise", ]
+```
