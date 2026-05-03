@@ -2,14 +2,16 @@
 % Please edit documentation in R/budget.R
 \name{tee_budget_compare}
 \alias{tee_budget_compare}
-\title{Compare naive vs standard vs TEE allocation}
+\title{Compare naive, standard, and TEE budget allocation}
 \usage{
 tee_budget_compare(
   fit,
   budget,
   n_pool = NULL,
   cost_per_call = 1,
-  strategies = c("naive", "standard", "tee")
+  strategies = c("naive", "standard", "tee"),
+  fix_judge = TRUE,
+  fix_temperature = TRUE
 )
 }
 \arguments{
@@ -17,11 +19,18 @@ tee_budget_compare(
 
 \item{budget, n_pool, cost_per_call}{As in \code{\link[=tee_budget_allocate]{tee_budget_allocate()}}.}
 
-\item{strategies}{Character vector of strategies to compare.}
+\item{strategies}{Subset of \code{c("naive", "standard", "tee")} to evaluate.}
+
+\item{fix_judge, fix_temperature}{Logical defaults \code{TRUE}.}
 }
 \value{
 A tibble with one row per strategy.
 }
 \description{
-Compare naive vs standard vs TEE allocation
+Three strategies on the same budget:
+\describe{
+\item{naive}{One configuration, R = 3 replications, all remaining budget into N.}
+\item{standard}{One configuration, R = 1, all budget into N (capped at pool).}
+\item{tee}{Optimum from \code{\link[=tee_budget_allocate]{tee_budget_allocate()}}.}
+}
 }

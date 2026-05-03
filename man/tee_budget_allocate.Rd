@@ -9,8 +9,8 @@ tee_budget_allocate(
   budget,
   cost_per_call = 1,
   n_pool = NULL,
-  v_max = NULL,
-  r_max = 8,
+  v_max = 5L,
+  r_max = 8L,
   fix_judge = TRUE,
   fix_temperature = TRUE
 )
@@ -22,19 +22,36 @@ tee_budget_allocate(
 
 \item{cost_per_call}{Scalar or tibble keyed by judge / SUT.}
 
-\item{n_pool}{Maximum items available.}
+\item{n_pool}{Maximum items available. Defaults to twice the pilot's \code{N}.}
 
-\item{v_max}{Maximum prompt variants.}
+\item{v_max}{Maximum prompt variants. Defaults to \code{5}.}
 
-\item{r_max}{Maximum replications.}
+\item{r_max}{Maximum replications. Defaults to \code{8}.}
 
-\item{fix_judge, fix_temperature}{Logical, default \code{TRUE} (operational case).}
+\item{fix_judge, fix_temperature}{Logical, default \code{TRUE}.}
 }
 \value{
-An object of class \code{tee_budget}.
+An object of class \code{tee_budget} with the optimum and the full
+grid.
 }
 \description{
-Grid search over \verb{(N, V, R)} to minimise projected \code{Var(theta-hat)} under a
-fixed budget and item pool. Supports heterogeneous per-judge / per-SUT
-costs.
+Grid search over \verb{(N, V, R)} to minimise projected \code{Var(theta-hat)}
+under a fixed budget and item pool. By default, the operational case
+(fixed judge & temperature) is used: a single configuration deployed at
+inference time, where the budget buys items × prompts × replications.
+}
+\details{
+Pass a tibble to \code{cost_per_call} to express heterogeneous per-judge or
+per-SUT costs (e.g., Opus calls cost 30 times Haiku calls). The tibble
+should have one row per level of \code{judge_model} or \code{sut_model} and a
+\code{cost_per_call} column. The grid search then picks the cheapest call
+under the user's caps; if a \code{judge_model} / \code{sut_model} column is
+included, the optimisation respects that subset of judges / SUTs.
+}
+\examples{
+\dontrun{
+alloc <- tee_budget_allocate(fit, budget = 6000, n_pool = 1000,
+                             v_max = 5, r_max = 8)
+alloc
+}
 }
