@@ -115,7 +115,11 @@ baseline_se <- function(fit, design = NULL) {
   m <- fit$meta
   N <- design$N %||% m$N
   V <- design$V %||% m$V
-  M <- if (!is.null(design$M)) design$M else (if (!is.na(m$M)) m$M else 1L)
+  # If the fit has no judge facet, fall back to the SUT count (MMLU-style).
+  M_meta <- if (!is.na(m$M)) m$M
+            else if (!is.null(m$S) && !is.na(m$S)) m$S
+            else 1L
+  M <- if (!is.null(design$M)) design$M else M_meta
   H <- if (!is.null(design$H)) design$H else (if (!is.na(m$H)) m$H else 1L)
   R <- design$R %||% m$R
   fix_judge       <- design$fix_judge       %||% TRUE

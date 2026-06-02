@@ -1,10 +1,2 @@
 docs
 inst/doc
-.DS_Store
-.Rproj.user/
-.Rhistory
-.RData
-.Ruserdata
-*.Rproj
-.Renviron
-.claude/

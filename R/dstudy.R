@@ -67,7 +67,12 @@ tee_dstudy <- function(fit, scenarios = NULL, by = NULL) {
 default_scenarios <- function(meta) {
   N <- meta$N
   V <- if (is.na(meta$V)) 1L else meta$V
-  M <- if (is.na(meta$M)) 1L else meta$M
+  # Use the SUT facet count when there is no judge facet (MMLU-style fits).
+  # The two are mutually exclusive in the current API.
+  M_raw <- if (!is.na(meta$M)) meta$M
+           else if (!is.null(meta$S) && !is.na(meta$S)) meta$S
+           else NA_integer_
+  M <- if (is.na(M_raw)) 1L else M_raw
   H <- if (is.na(meta$H)) 1L else meta$H
   R <- meta$R
 
@@ -108,7 +113,12 @@ tee_dstudy_grouped <- function(fit, by, scenarios) {
     sub <- groups[[g]]
     cli::cli_inform(c(i = "Fitting decomposition for {by_chr} = {.val {g}}"))
     sub_design <- fit$design
-    sub_design$data <- sub
+    # Drop unsampled factor levels: within one group the `by` factor (and any
+    # facet not present in this subset) collapses to a single sampled level.
+    # Without this, tee_formula()'s nlevels() check keeps the degenerate
+    # (1 | category) term and lme4 errors "grouping factors must have > 1
+    # sampled level".
+    sub_design$data <- droplevels(sub)
     sub_design$meta$N <- nlevels(droplevels(sub$item_id))
     sub_fit <- tee_decompose(sub_design,
                              link = fit$link,
@@ -194,17 +204,41 @@ vc_named_list <- function(fit) {
     x <- v$variance[v$tle_label == label]
     if (length(x) == 0L) 0 else x[1L]
   }
+  # MMLU-style fits use SUT instead of judge as the model-side
+  # design-sensitivity facet. Fall back to the SUT label set when the
+  # judge label is absent so that vc_named_list returns a single
+  # canonical view of the interaction structure regardless of facet name.
+  has_judge <- "item x judge" %in% v$tle_label ||
+               "judge model (design sensitivity)" %in% v$tle_label
+  if (has_judge) {
+    ij_label <- "item x judge"
+    pj_label <- "prompt x judge"
+    lambda_label <- "judge model (design sensitivity)"
+  } else {
+    ij_label <- "item x SUT"
+    pj_label <- "prompt x SUT"
+    lambda_label <- "SUT (design sensitivity)"
+  }
   list(
     cat       = pull_label("between-category"),
     item      = pull_label("within-category item") + pull_label("item"),
     prompt    = pull_label("prompt"),
     ip        = pull_label("item x prompt"),
-    ij        = pull_label("item x judge"),
-    pj        = pull_label("prompt x judge"),
+    ij        = pull_label(ij_label),
+    pj        = pull_label(pj_label),
     it        = pull_label("item x temperature"),
     pt        = pull_label("prompt x temperature"),
     cell      = sum(v$variance[grepl("^cell-level", v$tle_label)]),
-    replicate = pull_label("replicate noise")
+    replicate = pull_label("replicate noise"),
+    # Fixed-effect design-sensitivity indices: when judge/SUT/temperature
+    # are treated as random (i.e., averaged over a sample of M judges or
+    # SUTs, or H temperatures, rather than fixed at one), the
+    # corresponding population-variance index enters Var(theta-hat) as
+    # lambda/M (judge or SUT) or tau/H (temperature). When the facet is
+    # fixed in deployment (`fix_judge = TRUE` / `fix_temperature = TRUE`),
+    # the index drops out.
+    lambda    = pull_label(lambda_label),
+    tau       = pull_label("temperature (design sensitivity)")
   )
 }
 
@@ -220,11 +254,19 @@ dstudy_total_variance <- function(vc, N, V, M, H, R,
   v_it <- if (fix_temperature) vc$it / N else vc$it / (N * H)
   v_pt <- if (fix_temperature) vc$pt / V else vc$pt / (V * H)
 
+  # Fixed-effect design-sensitivity terms. Default to 0 if absent (older
+  # vc_named_list outputs that pre-date the lambda/tau slots).
+  s2_lambda <- if (is.null(vc$lambda)) 0 else vc$lambda
+  s2_tau    <- if (is.null(vc$tau))    0 else vc$tau
+  v_lambda <- if (fix_judge)       0 else s2_lambda / M
+  v_tau    <- if (fix_temperature) 0 else s2_tau    / H
+
   cell_div <- N * V *
     (if (fix_judge)       1L else M) *
     (if (fix_temperature) 1L else H)
   v_cell <- vc$cell / cell_div
   v_rep  <- vc$replicate / (cell_div * R)
 
-  v_item + v_prompt + v_ip + v_ij + v_pj + v_it + v_pt + v_cell + v_rep
+  v_item + v_prompt + v_ip + v_ij + v_pj + v_it + v_pt +
+    v_lambda + v_tau + v_cell + v_rep
 }

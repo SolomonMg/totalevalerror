@@ -1,7 +1,7 @@
 Package: totalevalerror
 Title: Total Eval Error: Variance Decomposition and D-Study for LLM
     Evaluation
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R:
     person("Solomon", "Messing", , "solomon.messing@gmail.com", role = c("aut", "cre"))
 Description: Decomposes uncertainty in LLM-based evaluation into a crossed

@@ -58,3 +58,62 @@ test_that("closed-form helpers agree with master function", {
   expect_lt(v_mix1, v_fixed)  # avg over temp helps too
   expect_lt(v_mix2, v_fixed)
 })
+
+test_that("design-sensitivity lambda/M term enters when judge is averaged", {
+  # When fix_judge = FALSE and lambda > 0, the projection picks up lambda/M.
+  # When fix_judge = TRUE, the term drops. Same for tau / temperature.
+  vc_with    <- list(cat = 0, item = 0.2, prompt = 0.05, ip = 0,
+                     ij = 0, pj = 0, it = 0, pt = 0,
+                     cell = 0, replicate = 0,
+                     lambda = 0.30, tau = 0.10)
+  vc_without <- list(cat = 0, item = 0.2, prompt = 0.05, ip = 0,
+                     ij = 0, pj = 0, it = 0, pt = 0,
+                     cell = 0, replicate = 0,
+                     lambda = 0,    tau = 0)
+
+  # Fix judge AND temperature: lambda/M and tau/H both drop. With and without
+  # the fixed-effect indices should agree.
+  v_fix_w  <- tee_dstudy_var_fixed(vc_with,    N = 100, V = 5, R = 3, M = 1, H = 1)
+  v_fix_wo <- tee_dstudy_var_fixed(vc_without, N = 100, V = 5, R = 3, M = 1, H = 1)
+  expect_equal(v_fix_w, v_fix_wo)
+
+  # Average over M = 3 judges and H = 2 temps: with-lambda picks up
+  # 0.30/3 + 0.10/2 = 0.15 of extra variance.
+  v_avg_w  <- tee_dstudy_var_avg(vc_with,    N = 100, V = 5, M = 3, H = 2, R = 3)
+  v_avg_wo <- tee_dstudy_var_avg(vc_without, N = 100, V = 5, M = 3, H = 2, R = 3)
+  expect_equal(v_avg_w - v_avg_wo, 0.30 / 3 + 0.10 / 2, tolerance = 1e-12)
+
+  # Mixed: fix judge only -> lambda drops but tau/H stays.
+  v_mix_w <- tee_dstudy_var_mixed(vc_with, N = 100, V = 5, M = 3, H = 2, R = 3,
+                                  fix_judge = TRUE, fix_temperature = FALSE)
+  v_mix_wo <- tee_dstudy_var_mixed(vc_without, N = 100, V = 5, M = 3, H = 2, R = 3,
+                                   fix_judge = TRUE, fix_temperature = FALSE)
+  expect_equal(v_mix_w - v_mix_wo, 0.10 / 2, tolerance = 1e-12)
+
+  # Default to 0 when slot absent (backward compatibility for callers
+  # that built vc lists by hand without lambda / tau).
+  vc_legacy <- vc_without
+  vc_legacy$lambda <- NULL
+  vc_legacy$tau    <- NULL
+  v_legacy <- tee_dstudy_var_avg(vc_legacy, N = 100, V = 5, M = 3, H = 2, R = 3)
+  expect_equal(v_legacy, v_avg_wo)
+})
+
+test_that("vc_named_list pulls lambda and tau from a fitted decomposition", {
+  skip_on_cran()
+  # judge_means = c(-0.5, 0, 0.5) gives a non-trivial fixed-effect
+  # judge-model design-sensitivity index.
+  df <- make_sim(N = 30, V = 3, M = 3, R = 2,
+                 judge_means = c(-0.5, 0, 0.5))
+  des <- tee_design(df, outcome = y, item = item, prompt = variant,
+                    judge = judge, replicate = rep, scoring = "likert")
+  fit <- suppressWarnings(suppressMessages(tee_decompose(des)))
+  vc <- totalevalerror:::vc_named_list(fit)
+  expect_true("lambda" %in% names(vc))
+  expect_true("tau"    %in% names(vc))
+  # judge_means span 1.0 with 3 levels => population variance > 0.
+  expect_gt(vc$lambda, 0)
+  # tau is 0 because the make_sim helper does not include a temperature
+  # facet; vc_named_list returns 0 when the row is absent.
+  expect_equal(vc$tau, 0)
+})

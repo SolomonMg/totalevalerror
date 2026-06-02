@@ -1,10 +1,6 @@
 
 # totalevalerror
 
-<!-- badges: start -->
-[![R-CMD-check](https://github.com/SolomonMg/totalevalerror/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SolomonMg/totalevalerror/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
-
 `totalevalerror` decomposes uncertainty in LLM-based evaluation into a crossed random-effects mixed model, projects standard errors under hypothetical designs (D-study), and recommends pilot sizes and budget allocations. It implements the Total Eval Error (TEE) framework from Messing (2026).
 
 ## Installation
@@ -31,19 +27,9 @@ des <- tee_design(
 # 2. Fit the variance decomposition
 fit <- tee_decompose(des)
 
-# 3. Get a 95% confidence interval on the headline accuracy (theta-hat).
-#    Returns a 1-row tibble: estimate | ci_lo | ci_hi | se | method
+# 3. Get the corrected SE and a CI on theta-hat
+tee_se(fit)
 tee_theta_ci(fit, level = 0.95)
-#> # A tibble: 1 x 5
-#>   estimate ci_lo ci_hi     se method
-#>      <dbl> <dbl> <dbl>  <dbl> <chr>
-#> 1    0.836 0.731 0.941 0.0535 normal
-
-# Just the SE? Use tee_se(fit). Compare it to the naive (i.i.d.) SE that
-# pretends prompts/judges/items don't add variance — TEE typically reveals
-# the naive CI is far too narrow:
-tee_se_compare(fit, naive_se = sd(mmlu_pilot$outcome) / sqrt(nrow(mmlu_pilot)))
-#> $se_naive 0.0058   $se_tee 0.0534   $underestimate_pct 89.1
 
 # 4. Project under hypothetical designs (D-study)
 proj <- tee_dstudy(fit)
@@ -76,4 +62,4 @@ citation("totalevalerror")
 
 ## License
 
-MIT (c) Solomon Messing.
+MIT (c) the authors.
