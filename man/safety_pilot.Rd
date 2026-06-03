@@ -17,8 +17,11 @@ A tibble with the following columns:
 }
 }
 \source{
-Subsampled from \code{data/processed/safety_clean.csv} in
-\url{https://github.com/SolomonMg/total_llm_error}.
+Subsampled from the AILuminate v1.0 safety benchmark (MLCommons;
+Ghosh et al. 2025). The five judge-prompt framing variants are documented
+in \code{inst/prompts/safety_variants.md}. Rendered safety prompts are not
+bundled because they embed model responses to hazard prompts; render them
+from the template and the AILuminate items.
 }
 \usage{
 safety_pilot

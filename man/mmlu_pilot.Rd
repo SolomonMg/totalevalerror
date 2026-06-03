@@ -17,7 +17,9 @@ A tibble with the following columns:
 }
 }
 \source{
-Subsampled from \code{data/processed/mmlu_clean.csv}.
+Subsampled from MMLU (Hendrycks et al. 2021). The exact rendered
+prompts for all five variants ship in \code{inst/extdata/variants_mmlu.csv};
+the framing templates are in \code{inst/prompts/mmlu_variants.md}.
 }
 \usage{
 mmlu_pilot

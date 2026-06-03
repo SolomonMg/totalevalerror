@@ -17,7 +17,11 @@ A tibble with the following columns:
 }
 }
 \source{
-Subsampled from \code{data/processed/arena_likert_clean.csv}.
+Subsampled from Chatbot Arena LLM-as-judge battles (Chiang et al.
+2024). The exact rendered prompts for all five Likert and pairwise variants
+ship in \code{inst/extdata/variants_likert.csv} and \code{variants_pairwise.csv}; the
+framing templates are in \verb{inst/prompts/} (Likert, pairwise, and their
+chain-of-thought versions).
 }
 \usage{
 arena_pilot

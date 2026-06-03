@@ -14,8 +14,11 @@
 #'   \item{replication}{Replication index within cell (integer).}
 #'   \item{outcome}{Binary outcome (0 / 1).}
 #' }
-#' @source Subsampled from `data/processed/safety_clean.csv` in
-#'   <https://github.com/SolomonMg/total_llm_error>.
+#' @source Subsampled from the AILuminate v1.0 safety benchmark (MLCommons;
+#'   Ghosh et al. 2025). The five judge-prompt framing variants are documented
+#'   in `inst/prompts/safety_variants.md`. Rendered safety prompts are not
+#'   bundled because they embed model responses to hazard prompts; render them
+#'   from the template and the AILuminate items.
 "safety_pilot"
 
 #' Pilot data: MMLU
@@ -34,7 +37,9 @@
 #'   \item{replication}{Replication index within cell.}
 #'   \item{outcome}{Binary outcome (0 / 1).}
 #' }
-#' @source Subsampled from `data/processed/mmlu_clean.csv`.
+#' @source Subsampled from MMLU (Hendrycks et al. 2021). The exact rendered
+#'   prompts for all five variants ship in `inst/extdata/variants_mmlu.csv`;
+#'   the framing templates are in `inst/prompts/mmlu_variants.md`.
 "mmlu_pilot"
 
 #' Pilot data: Chatbot Arena Likert
@@ -53,5 +58,9 @@
 #'   \item{replication}{Replication index (Arena Likert has 1 score per cell).}
 #'   \item{outcome}{Likert score 1 - 5.}
 #' }
-#' @source Subsampled from `data/processed/arena_likert_clean.csv`.
+#' @source Subsampled from Chatbot Arena LLM-as-judge battles (Chiang et al.
+#'   2024). The exact rendered prompts for all five Likert and pairwise variants
+#'   ship in `inst/extdata/variants_likert.csv` and `variants_pairwise.csv`; the
+#'   framing templates are in `inst/prompts/` (Likert, pairwise, and their
+#'   chain-of-thought versions).
 "arena_pilot"
